@@ -1,3 +1,3 @@
-# mongodb-demo
+# mogodb-demo
 
-通过node monk连接数据库
+通过node monk来连接
