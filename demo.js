@@ -1,11 +1,13 @@
 const Koa = require('koa');
 const Router = require('koa-router');
+const bodyParser = require('koa-bodyparser');
 const Monk = require('monk');
 // 创建一个Koa对象表示web app本身:
 const app = new Koa();
 const router=new Router();
 const db=new Monk('localhost:27017/myproject');//链接到库
 const results = db.get('document');//表
+const account = db.get('account');
 
 
 // 打印request URL:
@@ -33,6 +35,26 @@ router.get('/api/getCategory', async ( ctx ) => {
   ctx.body = data;
 })
 
+router.post('/api/validateUser', async ( ctx ) => {
+  let dbAccount = await account.find();
+  ctx.response.type = 'application/json';
+
+  let user = ctx.request.body.user;
+  let password = ctx.request.body.password;
+
+  if (dbAccount[0].user === user && dbAccount[0].password === password) {
+    ctx.body = {
+      valid: true
+    }
+  } else {
+    ctx.body = {
+      valid: false
+    }
+  }
+})
+
+// 进行requestbody解析
+app.use(bodyParser());
 
 // 加载路由中间件
 //解释：app.use 加载用于处理http請求的middleware（中间件），当一个请求来的时候，会依次被这些 middlewares处理。
